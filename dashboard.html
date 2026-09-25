@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Member Dashboard | Tender Galaxy</title>
+    <title>Live Tenders Dashboard | Tender Galaxy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -15,12 +15,13 @@
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-    <header class="max-w-6xl mx-auto flex justify-between items-center mb-8 glass-card p-4 rounded-2xl">
+    <!-- Header Navigation -->
+    <header class="max-w-6xl mx-auto flex justify-between items-center mb-6 glass-card p-4 rounded-2xl">
         <div class="flex items-center space-x-3">
             <a href="./index.html" class="bg-gradient-to-r from-pink-500 to-purple-600 p-2.5 rounded-xl text-white"><i class="fa-solid fa-rocket"></i></a>
             <div>
                 <h1 class="font-bold text-lg text-white">Tender Galaxy</h1>
-                <p class="text-xs text-slate-400">Welcome, <span id="userName" class="text-pink-400 font-semibold">User</span></p>
+                <p class="text-xs text-slate-400">Welcome, <span id="userName" class="text-pink-400 font-semibold">Member</span></p>
             </div>
         </div>
         <button onclick="logout()" class="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold rounded-xl hover:bg-red-500 hover:text-white transition">
@@ -29,10 +30,12 @@
     </header>
 
     <main class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Top Stats Banner -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6 rounded-2xl">
             <div>
                 <h2 class="text-xl font-black text-white">Live Government Tenders</h2>
-                <p class="text-xs text-slate-400 mt-1">Real-time auto-scraped tenders feed.</p>
+                <p class="text-xs text-slate-400 mt-1">Total Loaded Tenders: <span id="totalCount" class="text-pink-400 font-bold">0</span></p>
             </div>
             <div class="flex items-center space-x-2 bg-slate-900/80 px-4 py-2 rounded-xl border border-white/10">
                 <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></span>
@@ -40,15 +43,50 @@
             </div>
         </div>
 
+        <!-- Search Bar & Filters Section -->
+        <div class="glass-card p-4 rounded-2xl flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div class="relative w-full md:w-2/3">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search tenders by keywords, department, ref number..." 
+                    class="w-full bg-slate-900/90 text-white pl-11 pr-4 py-2.5 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-pink-500 transition">
+            </div>
+            <div class="flex gap-2 w-full md:w-auto">
+                <select id="itemsPerPage" onchange="changePerPage()" class="bg-slate-900/90 text-slate-300 text-xs px-3 py-2.5 rounded-xl border border-white/10 focus:outline-none">
+                    <option value="10">10 Per Page</option>
+                    <option value="20" selected>20 Per Page</option>
+                    <option value="50">50 Per Page</option>
+                    <option value="100">100 Per Page</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Tenders Container Grid -->
         <div id="tendersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="col-span-full text-center py-12 glass-card rounded-2xl">
                 <i class="fa-solid fa-spinner fa-spin text-3xl text-pink-500 mb-3"></i>
-                <p class="text-sm text-slate-400">Fetching latest live tenders...</p>
+                <p class="text-sm text-slate-400">Loading live tenders dataset...</p>
             </div>
         </div>
+
+        <!-- Pagination Navigation Bar -->
+        <div id="paginationBar" class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs text-slate-400">
+            <button id="prevBtn" onclick="prevPage()" class="px-4 py-2 bg-slate-800 rounded-xl text-white font-bold hover:bg-slate-700 disabled:opacity-40 transition">
+                <i class="fa-solid fa-chevron-left mr-1"></i> Previous
+            </button>
+            <span id="pageIndicator" class="font-semibold text-slate-300">Page 1 of 1</span>
+            <button id="nextBtn" onclick="nextPage()" class="px-4 py-2 bg-slate-800 rounded-xl text-white font-bold hover:bg-slate-700 disabled:opacity-40 transition">
+                Next <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+        </div>
+
     </main>
 
     <script>
+        let allTendersData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let itemsPerPage = 20;
+
         document.addEventListener("DOMContentLoaded", () => {
             const user = localStorage.getItem("clientUser") || "Member";
             document.getElementById("userName").innerText = user;
@@ -65,22 +103,51 @@
                 if (!response.ok) response = await fetch(cdnUrl);
                 if (!response.ok) throw new Error("Failed to fetch JSON");
                 
-                const tenders = await response.json();
-                renderTenders(tenders);
+                allTendersData = await response.json();
+                filteredData = [...allTendersData];
+                document.getElementById("totalCount").innerText = allTendersData.length;
+                renderCurrentPage();
             } catch (error) {
                 console.error("Fetch Error:", error);
-                fetchLocalOrSampleTenders();
+                fetchSampleData();
             }
         }
 
-        function renderTenders(tenders) {
+        function handleSearch() {
+            const query = document.getElementById("searchInput").value.toLowerCase().trim();
+            filteredData = allTendersData.filter(item => {
+                const title = (item.title || "").toLowerCase();
+                const ref = (item.reference_no || item.tender_id || "").toLowerCase();
+                return title.includes(query) || ref.includes(query);
+            });
+            currentPage = 1;
+            renderCurrentPage();
+        }
+
+        function changePerPage() {
+            itemsPerPage = parseInt(document.getElementById("itemsPerPage").value);
+            currentPage = 1;
+            renderCurrentPage();
+        }
+
+        function renderCurrentPage() {
             const container = document.getElementById("tendersContainer");
-            if (!tenders || tenders.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-2xl"><p class="text-slate-400 text-sm">No live tenders found right now.</p></div>`;
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 glass-card rounded-2xl">
+                        <p class="text-slate-400 text-sm">No tenders matched your search.</p>
+                    </div>`;
+                updatePaginationUI(1, 1);
                 return;
             }
 
-            container.innerHTML = tenders.map(item => `
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentSlice = filteredData.slice(startIndex, endIndex);
+
+            container.innerHTML = currentSlice.map(item => `
                 <div class="glass-card p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-pink-500/50 transition">
                     <div>
                         <div class="flex justify-between items-start gap-2 mb-2">
@@ -93,22 +160,53 @@
                         </div>
                         <h3 class="text-base font-bold text-white line-clamp-2">${item.title || 'Tender Notice'}</h3>
                     </div>
+                    
                     <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
                         <span>Updated: ${item.updated_at ? item.updated_at.split(' ')[0] : 'Today'}</span>
-                        <a href="${item.link || '#'}" target="_blank" class="px-3 py-1.5 btn-gradient rounded-lg text-white font-bold text-xs hover:opacity-90 inline-block">
+                        <a href="${item.link || item.url || '#'}" target="_blank" class="px-3 py-1.5 btn-gradient rounded-lg text-white font-bold text-xs hover:opacity-90 inline-block">
                             View Details
                         </a>
                     </div>
                 </div>
             `).join('');
+
+            updatePaginationUI(currentPage, totalPages);
         }
 
-        function fetchLocalOrSampleTenders() {
-            const sampleTenders = [
-                { title: "Construction of Road and Bridge Works - CPWD", reference_no: "2026_CPWD_88123_1", closing_date: "15-Oct-2026", updated_at: "2026-09-25 10:00:00" },
-                { title: "Supply and Maintenance of IT Hardware - Indian Railways", reference_no: "2026_RAIL_44109_2", closing_date: "20-Oct-2026", updated_at: "2026-09-25 11:30:00" }
-            ];
-            renderTenders(sampleTenders);
+        function updatePaginationUI(page, totalPages) {
+            document.getElementById("pageIndicator").innerText = `Page ${page} of ${totalPages}`;
+            document.getElementById("prevBtn").disabled = (page === 1);
+            document.getElementById("nextBtn").disabled = (page >= totalPages);
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderCurrentPage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderCurrentPage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function fetchSampleData() {
+            allTendersData = Array.from({ length: 50 }, (_, i) => ({
+                title: `Government Tender Project #${i + 1} - Infrastructure & IT Supply`,
+                reference_no: `2026_GOV_${1000 + i}`,
+                closing_date: `${10 + (i % 20)}-Nov-2026`,
+                updated_at: "2026-09-25 12:00:00",
+                link: "https://eprocure.gov.in"
+            }));
+            filteredData = [...allTendersData];
+            document.getElementById("totalCount").innerText = allTendersData.length;
+            renderCurrentPage();
         }
 
         function logout() {
