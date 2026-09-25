@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Galaxy | Live Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
+        .glass-card { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-gradient { background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+    <header class="max-w-6xl mx-auto w-full flex justify-between items-center glass-card p-4 rounded-2xl mb-12">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-r from-pink-500 to-purple-600 p-2.5 rounded-xl text-white">
+                <i class="fa-solid fa-rocket"></i>
+            </div>
+            <span class="font-black text-xl text-white tracking-wide">Tender Galaxy</span>
+        </div>
+        <a href="dashboard.html" class="px-5 py-2.5 btn-gradient rounded-xl text-white font-bold text-xs hover:opacity-90 transition flex items-center gap-2">
+            <i class="fa-solid fa-chart-line"></i> Dashboard
+        </a>
+    </header>
+
+    <main class="max-w-4xl mx-auto text-center space-y-6 my-auto">
+        <span class="px-4 py-1.5 bg-pink-500/10 text-pink-400 border border-pink-500/20 text-xs font-bold rounded-full inline-block">
+            ⚡ Live Government Tenders
+        </span>
+        <h1 class="text-4xl md:text-6xl font-black text-white leading-tight">
+            Welcome to <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">Tender Galaxy</span>
+        </h1>
+        <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+            Access daily auto-scraped government tenders instantly.
+        </p>
+        <div class="pt-4 flex justify-center">
+            <a href="dashboard.html" class="px-8 py-3.5 btn-gradient rounded-xl text-white font-bold text-sm hover:scale-105 transition shadow-lg shadow-pink-500/25">
+                Open Tender Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </main>
+
+    <footer class="max-w-6xl mx-auto w-full text-center text-xs text-slate-500 py-6 border-t border-white/5 mt-12">
+        <p>© 2026 Tender Galaxy. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
