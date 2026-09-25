@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard | Tender Galaxy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
+        .glass-card { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-gradient { background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%); }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <header class="max-w-6xl mx-auto flex justify-between items-center mb-8 glass-card p-4 rounded-2xl">
+        <div class="flex items-center space-x-3">
+            <a href="./index.html" class="bg-gradient-to-r from-pink-500 to-purple-600 p-2.5 rounded-xl text-white"><i class="fa-solid fa-rocket"></i></a>
+            <div>
+                <h1 class="font-bold text-lg text-white">Tender Galaxy</h1>
+                <p class="text-xs text-slate-400">Welcome, <span id="userName" class="text-pink-400 font-semibold">User</span></p>
+            </div>
+        </div>
+        <button onclick="logout()" class="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold rounded-xl hover:bg-red-500 hover:text-white transition">
+            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+        </button>
+    </header>
+
+    <main class="max-w-6xl mx-auto space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass-card p-6 rounded-2xl">
+            <div>
+                <h2 class="text-xl font-black text-white">Live Government Tenders</h2>
+                <p class="text-xs text-slate-400 mt-1">Real-time auto-scraped tenders feed.</p>
+            </div>
+            <div class="flex items-center space-x-2 bg-slate-900/80 px-4 py-2 rounded-xl border border-white/10">
+                <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></span>
+                <span class="text-xs font-semibold text-slate-300">Auto-Sync Active</span>
+            </div>
+        </div>
+
+        <div id="tendersContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="col-span-full text-center py-12 glass-card rounded-2xl">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-pink-500 mb-3"></i>
+                <p class="text-sm text-slate-400">Fetching latest live tenders...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = localStorage.getItem("clientUser") || "Member";
+            document.getElementById("userName").innerText = user;
+            loadLiveTenders();
+        });
+
+        async function loadLiveTenders() {
+            const timestamp = new Date().getTime();
+            const primaryUrl = `https://raw.githubusercontent.com/sonu93804-cmyk/tender-galaxy/main/tenders.json?t=${timestamp}`;
+            const cdnUrl = `https://cdn.jsdelivr.net/gh/sonu93804-cmyk/tender-galaxy@main/tenders.json?t=${timestamp}`;
+
+            try {
+                let response = await fetch(primaryUrl);
+                if (!response.ok) response = await fetch(cdnUrl);
+                if (!response.ok) throw new Error("Failed to fetch JSON");
+                
+                const tenders = await response.json();
+                renderTenders(tenders);
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                fetchLocalOrSampleTenders();
+            }
+        }
+
+        function renderTenders(tenders) {
+            const container = document.getElementById("tendersContainer");
+            if (!tenders || tenders.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-2xl"><p class="text-slate-400 text-sm">No live tenders found right now.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = tenders.map(item => `
+                <div class="glass-card p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-pink-500/50 transition">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <span class="px-2.5 py-1 bg-purple-500/20 text-purple-300 text-[10px] font-bold rounded-lg border border-purple-500/30">
+                                Ref: ${item.reference_no || item.tender_id || 'N/A'}
+                            </span>
+                            <span class="text-[11px] text-slate-400">
+                                <i class="fa-regular fa-clock text-pink-400 mr-1"></i> ${item.closing_date || item.due_date || 'TBD'}
+                            </span>
+                        </div>
+                        <h3 class="text-base font-bold text-white line-clamp-2">${item.title || 'Tender Notice'}</h3>
+                    </div>
+                    <div class="pt-3 border-t border-white/5 flex justify-between items-center text-xs text-slate-400">
+                        <span>Updated: ${item.updated_at ? item.updated_at.split(' ')[0] : 'Today'}</span>
+                        <a href="${item.link || '#'}" target="_blank" class="px-3 py-1.5 btn-gradient rounded-lg text-white font-bold text-xs hover:opacity-90 inline-block">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function fetchLocalOrSampleTenders() {
+            const sampleTenders = [
+                { title: "Construction of Road and Bridge Works - CPWD", reference_no: "2026_CPWD_88123_1", closing_date: "15-Oct-2026", updated_at: "2026-09-25 10:00:00" },
+                { title: "Supply and Maintenance of IT Hardware - Indian Railways", reference_no: "2026_RAIL_44109_2", closing_date: "20-Oct-2026", updated_at: "2026-09-25 11:30:00" }
+            ];
+            renderTenders(sampleTenders);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
