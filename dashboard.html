@@ -12,7 +12,6 @@
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
         .glass-card { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .btn-gradient { background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%); }
-        /* Custom styling for date input calendar picker icon */
         input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
@@ -41,7 +40,6 @@
 
         <!-- Interactive 6-Col Metrics Suite -->
         <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
-            <!-- Fully Clickable Mail Date Card with Calendar Picker Popup -->
             <div onclick="document.getElementById('mailDateInput').showPicker ? document.getElementById('mailDateInput').showPicker() : document.getElementById('mailDateInput').focus()" class="glass-card p-3 rounded-2xl border-l-4 border-cyan-400 flex flex-col justify-between cursor-pointer hover:bg-slate-800/80 transition">
                 <p class="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-between">Mail Date <i class="fa-solid fa-calendar-days text-cyan-400"></i></p>
                 <input type="date" id="mailDateInput" onchange="filterByDate()" value="2026-09-26" class="bg-slate-900 text-white text-[11px] font-bold p-1 rounded-lg border border-white/10 mt-1 focus:outline-none focus:border-cyan-400 cursor-pointer">
@@ -189,6 +187,7 @@
     <script>
         let rawTendersData = [];
         let processedData = [];
+        let interestedTenders = JSON.parse(localStorage.getItem('interestedTenders')) || [];
         let currentPage = 1;
         let itemsPerPage = 20;
         let analyticsChartInstance = null;
@@ -245,7 +244,18 @@
             document.getElementById("statFiltered").innerText = active;
             document.getElementById("statToday").innerText = todayCount;
             document.getElementById("statClosed").innerText = closed;
-            document.getElementById("statInterested").innerText = "0";
+            document.getElementById("statInterested").innerText = interestedTenders.length;
+        }
+
+        function toggleInterested(tenderId) {
+            if (interestedTenders.includes(tenderId)) {
+                interestedTenders = interestedTenders.filter(id => id !== tenderId);
+            } else {
+                interestedTenders.push(tenderId);
+            }
+            localStorage.setItem('interestedTenders', JSON.stringify(interestedTenders));
+            updateDashboardMetrics();
+            renderCurrentPage();
         }
 
         function renderAnalyticsChart() {
@@ -299,7 +309,7 @@
             } else if(type === 'closed') {
                 processedData = rawTendersData.filter(t => t.status === 'closed');
             } else if(type === 'interested') {
-                processedData = [];
+                processedData = rawTendersData.filter(t => interestedTenders.includes(t.id));
             } else {
                 processedData = [...rawTendersData];
             }
@@ -335,7 +345,7 @@
             const totalPages = Math.ceil(processedData.length / itemsPerPage) || 1;
 
             if (processedData.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-2xl"><p class="text-xs text-slate-400">No tenders found matching your selection for this date.</p></div>`;
+                container.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-2xl"><p class="text-xs text-slate-400">No tenders found matching your selection.</p></div>`;
                 updatePaginationUI(1, 1);
                 return;
             }
@@ -343,7 +353,9 @@
             const startIndex = (currentPage - 1) * itemsPerPage;
             const currentSlice = processedData.slice(startIndex, startIndex + itemsPerPage);
 
-            container.innerHTML = currentSlice.map(t => `
+            container.innerHTML = currentSlice.map(t => {
+                const isInterested = interestedTenders.includes(t.id);
+                return `
                 <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-cyan-400/50 transition space-y-4">
                     <div>
                         <div class="flex items-center justify-between text-xs mb-3">
@@ -359,8 +371,11 @@
                             <p><span class="text-slate-400">Closing Date:</span> ${t.estDate}</p>
                         </div>
                     </div>
-                    <div class="pt-2 border-t border-white/5">
-                        <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-2">
+                        <button onclick="toggleInterested('${t.id}')" class="w-full py-1.5 px-2 rounded-xl border ${isInterested ? 'bg-pink-500/20 border-pink-500 text-pink-300' : 'bg-slate-900 border-white/10 text-slate-400 hover:text-pink-400'} font-bold text-[11px] flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-heart"></i> ${isInterested ? 'Interested Marked' : 'Mark Interested'}
+                        </button>
+                        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-white/5">
                             <a href="${t.nitUrl}" download class="py-2 px-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] flex items-center justify-center gap-1 transition shadow-md">
                                 <i class="fa-solid fa-file-pdf"></i> NIT File
                             </a>
@@ -370,7 +385,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
 
             updatePaginationUI(currentPage, totalPages);
         }
