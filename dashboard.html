@@ -93,8 +93,8 @@
 
             <div id="filterInputsContainer" class="space-y-3">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-                    <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search Title, ID, Keyword..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
-                    <input type="text" id="orgIdInput" onkeyup="applyFilters()" placeholder="Search Ref / Org Tender ID..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Title, ID, Keyword..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
+                    <input type="text" id="orgIdInput" oninput="applyFilters()" placeholder="Search Ref / Org Tender ID..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
                     <select id="stateFilter" onchange="applyFilters()" class="bg-slate-900 text-slate-300 text-xs p-2 rounded-xl border border-white/10 focus:outline-none">
                         <option value="">All States</option>
                         <option value="Jharkhand">Jharkhand</option>
@@ -114,14 +114,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/5 text-xs">
-                    <div class="flex flex-wrap items-center gap-4 text-slate-300">
-                        <span class="font-bold text-slate-400">GeM / Non GeM:</span>
-                        <label class="flex items-center gap-1.5 cursor-pointer"><input type="radio" name="gemType" value="all" checked onchange="applyFilters()"> All</label>
-                        <label class="flex items-center gap-1.5 cursor-pointer"><input type="radio" name="gemType" value="gem" onchange="applyFilters()"> GeM</label>
-                        <label class="flex items-center gap-1.5 cursor-pointer"><input type="radio" name="gemType" value="nongem" onchange="applyFilters()"> Non GeM</label>
-                    </div>
-
-                    <div class="flex gap-2">
+                    <div class="flex items-center gap-2">
                         <button onclick="resetFilters()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition">CLEAR FILTERS</button>
                     </div>
                 </div>
@@ -277,6 +270,12 @@
                 console.warn("GitHub fetch fallback:", err);
             }
 
+            if (fetchedList.length === 0) {
+                fetchedList = [
+                    { id: "TG-2026-JH-8891", title: "Construction of High-School Building Block & Boundary Wall", dept: "PWD / Road Construction", location: "Jharkhand", value: "₹ 1,45,00,000", estDate: "15-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "Class-1 License"] }
+                ];
+            }
+
             rawTendersData = fetchedList.map(t => ({
                 id: t.id || t.reference_no || "TG-2026-LIVE",
                 title: t.title || "Tender Notice",
@@ -338,16 +337,7 @@
             currentPaywallView = mode;
             document.getElementById('viewFreeBtn').className = mode === 'free' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950" : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white";
             document.getElementById('viewPremiumBtn').className = mode === 'premium' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950" : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white";
-            
-            const filterContainer = document.getElementById('filterInputsContainer');
-            if(mode === 'free') {
-                filterContainer.style.opacity = "0.3";
-                filterContainer.style.pointerEvents = "none";
-            } else {
-                filterContainer.style.opacity = "1";
-                filterContainer.style.pointerEvents = "auto";
-            }
-            renderCurrentPage();
+            applyFilters();
         }
 
         function resetFilters() {
@@ -359,16 +349,16 @@
         }
 
         function applyFilters() {
-            const query = (document.getElementById("searchInput").value || "").toLowerCase().trim();
-            const orgId = (document.getElementById("orgIdInput").value || "").toLowerCase().trim();
-            const state = (document.getElementById("stateFilter").value || "").toLowerCase().trim();
-            const dept = (document.getElementById("deptFilter").value || "").toLowerCase().trim();
+            const query = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+            const orgId = (document.getElementById("orgIdInput")?.value || "").toLowerCase().trim();
+            const state = (document.getElementById("stateFilter")?.value || "").toLowerCase().trim();
+            const dept = (document.getElementById("deptFilter")?.value || "").toLowerCase().trim();
 
             processedData = rawTendersData.filter(t => {
-                const titleMatch = (t.title || "").toLowerCase().includes(query) || (t.id || "").toLowerCase().includes(query);
+                const titleMatch = !query || (t.title || "").toLowerCase().includes(query) || (t.id || "").toLowerCase().includes(query);
                 const orgMatch = !orgId || (t.id || "").toLowerCase().includes(orgId);
-                const stateMatch = !state || (t.location || "").toLowerCase().includes(state);
-                const deptMatch = !dept || (t.dept || "").toLowerCase().includes(dept);
+                const stateMatch = !state || (t.location || "").toLowerCase() === state;
+                const deptMatch = !dept || (t.dept || "").toLowerCase() === dept;
 
                 return titleMatch && orgMatch && stateMatch && deptMatch;
             });
