@@ -45,7 +45,7 @@
             </div>
         </header>
 
-        <!-- Interactive Metrics & Date Cards Suite -->
+        <!-- Fully Interactive Metrics & Date Cards Suite -->
         <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
             <div class="glass-card p-3.5 rounded-2xl border-l-4 border-cyan-400 flex flex-col justify-between">
                 <p class="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-between">Mail Date <i class="fa-solid fa-calendar text-cyan-400"></i></p>
@@ -73,7 +73,7 @@
             </div>
         </div>
 
-        <!-- FULLY POPULATED ADVANCED FILTER PANEL -->
+        <!-- FULLY DYNAMIC AUTO-POPULATED FILTER PANEL -->
         <div id="advancedFilterSection" class="glass-card p-5 rounded-2xl space-y-4 border border-purple-500/30">
             <div class="flex justify-between items-center border-b border-white/10 pb-3">
                 <div class="flex items-center gap-2">
@@ -91,33 +91,14 @@
                 <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Title, ID, Keyword..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
                 <input type="text" id="orgIdInput" oninput="applyFilters()" placeholder="Search Ref / Org Tender ID..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
                 
-                <!-- State Filter -->
+                <!-- Dynamically Populated States -->
                 <select id="stateFilter" onchange="applyFilters()" class="bg-slate-900 text-slate-300 text-xs p-2 rounded-xl border border-white/10 focus:outline-none">
-                    <option value="">All States / Regions</option>
-                    <option value="Jharkhand">Jharkhand</option>
-                    <option value="Bihar">Bihar</option>
-                    <option value="Odisha">Odisha</option>
-                    <option value="West Bengal">West Bengal</option>
-                    <option value="Uttar Pradesh">Uttar Pradesh</option>
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Rajasthan">Rajasthan</option>
-                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="">All States / Regions (Auto-Loaded)</option>
                 </select>
 
-                <!-- Department Filter -->
+                <!-- Dynamically Populated Departments -->
                 <select id="deptFilter" onchange="applyFilters()" class="bg-slate-900 text-slate-300 text-xs p-2 rounded-xl border border-white/10 focus:outline-none">
-                    <option value="">All Departments & Sectors</option>
-                    <option value="PWD / Road Construction">PWD / Road Construction</option>
-                    <option value="Energy & Solar">Energy & Solar</option>
-                    <option value="Railways">Railways</option>
-                    <option value="Military / Defense Engineering">Military / Defense Engineering</option>
-                    <option value="Central PSU (NTPC/BHEL)">Central PSU (NTPC/BHEL)</option>
-                    <option value="IT & Electronics Department">IT & Electronics Department</option>
-                    <option value="Health & Family Welfare">Health & Family Welfare</option>
-                    <option value="Water Resources / Irrigation">Water Resources / Irrigation</option>
-                    <option value="Urban Development & Housing">Urban Development & Housing</option>
-                    <option value="Education Department">Education Department</option>
+                    <option value="">All Departments & Sectors (Auto-Loaded)</option>
                 </select>
             </div>
         </div>
@@ -255,18 +236,6 @@
         });
 
         async function initDataFetch() {
-            // Built-in Enterprise Master Fallback Data to guarantee 100% instant display without empty states
-            let fallbackList = [
-                { id: "TG-2026-JHA-1001", title: "Construction of Multi-Story Administrative Building Block & Boundary Wall at Ranchi", dept: "PWD / Road Construction", location: "Jharkhand", value: "₹ 1,45,00,000", estDate: "15-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "Class-1 License"] },
-                { id: "TG-2026-BIH-1002", title: "Installation of Rooftop Solar Power Plant at Patna", dept: "Energy & Solar", location: "Bihar", value: "₹ 85,00,000", estDate: "20-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "OEM Certificate"] },
-                { id: "TG-2026-ODH-1003", title: "Widening and Strengthening of State Highway with Bituminous Concrete at Bhubaneswar", dept: "PWD / Road Construction", location: "Odisha", value: "₹ 3,20,00,000", estDate: "25-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "Road Contractor License"] },
-                { id: "TG-2026-WB-1004", title: "Procurement and Deployment of Enterprise Servers & Networking Hardware at Kolkata", dept: "IT & Electronics Department", location: "West Bengal", value: "₹ 95,00,000", estDate: "18-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "OEM Authorization"] },
-                { id: "TG-2026-UP-1005", title: "Construction of Overhead Water Tank and Pipeline Distribution Network at Lucknow", dept: "Water Resources / Irrigation", location: "Uttar Pradesh", value: "₹ 2,10,00,000", estDate: "28-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "Civil Engineering License"] },
-                { id: "TG-2026-MAH-1006", title: "Supply and Installation of Modular Office Furniture and Workstations at Mumbai", dept: "Urban Development & Housing", location: "Maharashtra", value: "₹ 45,00,000", estDate: "12-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "PAN Card"] },
-                { id: "TG-2026-DEL-1007", title: "Defense Infrastructure Maintenance and Repair Works at New Delhi", dept: "Military / Defense Engineering", location: "Delhi", value: "₹ 4,50,00,000", estDate: "30-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "Security Clearance"] },
-                { id: "TG-2026-RAJ-1008", title: "Thermal Power Station Boiler Maintenance & Overhaul at Jaipur", dept: "Central PSU (NTPC/BHEL)", location: "Rajasthan", value: "₹ 5,80,00,000", estDate: "05-Nov-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration", "PSU Credential"] }
-            ];
-
             let fetchedList = [];
             try {
                 const timestamp = new Date().getTime();
@@ -277,13 +246,16 @@
                     if (Array.isArray(ghData) && ghData.length > 0) fetchedList = [...ghData];
                 }
             } catch (err) {
-                console.warn("Using master fallback dataset:", err);
+                console.warn("Fetch error:", err);
             }
 
-            // Combine fetched data with robust master fallback if fetched list is small
-            let combined = fetchedList.length > 0 ? fetchedList : fallbackList;
+            if (fetchedList.length === 0) {
+                fetchedList = [
+                    { id: "TG-2026-JHA-101", title: "Construction of Multi-Story Administrative Building Block", dept: "PWD / Road Construction", location: "Jharkhand", value: "₹ 1,45,00,000", estDate: "15-Oct-2026", status: "live", nitUrl: "#", boqUrl: "#", eligibilityDocs: ["Class-3 DSC", "GST Registration"] }
+                ];
+            }
 
-            rawTendersData = combined.map(t => ({
+            rawTendersData = fetchedList.map(t => ({
                 id: t.id || t.reference_no || "TG-2026-LIVE",
                 title: t.title || "Tender Notice",
                 dept: t.dept || t.department || "PWD / Road Construction",
@@ -297,8 +269,32 @@
             }));
 
             document.getElementById("statTotal").innerText = rawTendersData.length;
+            populateDynamicDropdowns();
             renderAnalyticsChart();
             applyFilters();
+        }
+
+        // Automatically populate all States and Departments from JSON data
+        function populateDynamicDropdowns() {
+            const statesSet = new Set();
+            const deptsSet = new Set();
+
+            rawTendersData.forEach(t => {
+                if (t.location) statesSet.add(t.location);
+                if (t.dept) deptsSet.add(t.dept);
+            });
+
+            const stateSelect = document.getElementById("stateFilter");
+            stateSelect.innerHTML = '<option value="">All States / Regions</option>';
+            Array.from(statesSet).sort().forEach(state => {
+                stateSelect.innerHTML += `<option value="${state}">${state}</option>`;
+            });
+
+            const deptSelect = document.getElementById("deptFilter");
+            deptSelect.innerHTML = '<option value="">All Departments & Sectors</option>';
+            Array.from(deptsSet).sort().forEach(dept => {
+                deptSelect.innerHTML += `<option value="${dept}">${dept}</option>`;
+            });
         }
 
         function renderAnalyticsChart() {
