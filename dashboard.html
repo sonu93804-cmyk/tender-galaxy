@@ -17,18 +17,7 @@
 <body class="min-h-screen p-4 md:p-8 flex flex-col justify-between">
 
     <div class="max-w-7xl mx-auto w-full space-y-6">
-        <!-- Top Utility Bar -->
-        <div class="flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 glass-card px-4 py-2.5 rounded-2xl gap-2">
-            <div>
-                <span>Have a complaint? <a href="#" class="text-cyan-400 underline font-semibold">Report Here</a> OR Call :- Yuvraj Sisodia <a href="tel:9723606000" class="text-pink-400 font-bold">(9723606000)</a></span>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="text-white font-semibold" id="topUserName">Sanjay Kumar</span>
-                <button onclick="logout()" class="text-red-400 hover:text-red-300 font-bold"><i class="fa-solid fa-power-off"></i></button>
-            </div>
-        </div>
-
-        <!-- Navigation Header -->
+        <!-- Clean Navigation Header -->
         <header class="flex justify-between items-center glass-card p-4 rounded-2xl">
             <div class="flex items-center space-x-3">
                 <a href="index.html" class="bg-gradient-to-r from-pink-500 to-purple-600 p-2.5 rounded-xl text-white"><i class="fa-solid fa-rocket"></i></a>
@@ -45,30 +34,26 @@
             </div>
         </header>
 
-        <!-- Fully Interactive 7-Col Metrics & Date Cards Suite (Including Closed Tenders) -->
-        <div class="grid grid-cols-2 md:grid-cols-7 gap-3">
+        <!-- Interactive 6-Col Metrics Suite (Without Loaded Card) -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
             <div class="glass-card p-3 rounded-2xl border-l-4 border-cyan-400 flex flex-col justify-between">
                 <p class="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-between">Mail Date <i class="fa-solid fa-calendar text-cyan-400"></i></p>
                 <input type="date" id="mailDateInput" onchange="filterByDate()" value="2026-09-26" class="bg-slate-900 text-white text-[11px] font-bold p-1 rounded-lg border border-white/10 mt-1 focus:outline-none focus:border-cyan-400 cursor-pointer">
             </div>
             <div onclick="filterByMetric('today')" class="glass-card p-3 rounded-2xl border-l-4 border-purple-400 cursor-pointer hover:bg-slate-800/80 transition shadow-lg">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Today <i class="fa-solid fa-bolt text-purple-400 ml-1"></i></p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Today Tenders <i class="fa-solid fa-bolt text-purple-400 ml-1"></i></p>
                 <p id="statToday" class="text-base font-black text-purple-400 mt-1">0</p>
             </div>
-            <div onclick="filterByMetric('all')" class="glass-card p-3 rounded-2xl border-l-4 border-emerald-400 cursor-pointer hover:bg-slate-800/80 transition shadow-lg">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Loaded <i class="fa-solid fa-rotate text-emerald-400 ml-1"></i></p>
-                <p id="statTotal" class="text-base font-black text-emerald-400 mt-1">0</p>
-            </div>
             <div onclick="filterByMetric('active')" class="glass-card p-3 rounded-2xl border-l-4 border-amber-400 cursor-pointer hover:bg-slate-800/80 transition shadow-lg">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Active <i class="fa-solid fa-filter text-amber-400 ml-1"></i></p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Active Results <i class="fa-solid fa-filter text-amber-400 ml-1"></i></p>
                 <p id="statFiltered" class="text-base font-black text-amber-400 mt-1">0</p>
             </div>
             <div onclick="filterByMetric('closed')" class="glass-card p-3 rounded-2xl border-l-4 border-rose-500 cursor-pointer hover:bg-slate-800/80 transition shadow-lg">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Closed <i class="fa-solid fa-ban text-rose-500 ml-1"></i></p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Closed Tenders <i class="fa-solid fa-ban text-rose-500 ml-1"></i></p>
                 <p id="statClosed" class="text-base font-black text-rose-500 mt-1">0</p>
             </div>
             <div onclick="filterByMetric('interested')" class="glass-card p-3 rounded-2xl border-l-4 border-pink-400 cursor-pointer hover:bg-slate-800/80 transition shadow-lg">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Interested</p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Interested Tender</p>
                 <p id="statInterested" class="text-base font-black text-pink-400 mt-1">0</p>
             </div>
             <div class="glass-card p-3 rounded-2xl border-l-4 border-cyan-500 flex flex-col justify-between">
@@ -77,7 +62,7 @@
             </div>
         </div>
 
-        <!-- Single Advanced Filter Panel -->
+        <!-- Advanced Filter Panel -->
         <div id="advancedFilterSection" class="glass-card p-5 rounded-2xl space-y-4 border border-purple-500/30">
             <div class="flex justify-between items-center border-b border-white/10 pb-3">
                 <div class="flex items-center gap-2">
@@ -193,7 +178,7 @@
         </div>
     </div>
 
-    <!-- Script Engine with Interactive Metric Cards -->
+    <!-- Script Engine -->
     <script>
         let rawTendersData = [];
         let processedData = [];
@@ -204,7 +189,6 @@
         document.addEventListener("DOMContentLoaded", () => {
             const user = localStorage.getItem("clientUser") || "Sanjay Kumar";
             document.getElementById("userName").innerText = user;
-            document.getElementById("topUserName").innerText = user;
             initDataFetch();
         });
 
@@ -247,13 +231,12 @@
         }
 
         function updateDashboardMetrics() {
-            const total = rawTendersData.length;
             const active = rawTendersData.filter(t => t.status === 'live').length;
             const closed = rawTendersData.filter(t => t.status === 'closed').length;
+            const todayCount = rawTendersData.filter(t => t.estDate.includes("26-Sep-2026") && t.status === 'live').length;
 
-            document.getElementById("statTotal").innerText = total;
             document.getElementById("statFiltered").innerText = active;
-            document.getElementById("statToday").innerText = active;
+            document.getElementById("statToday").innerText = todayCount;
             document.getElementById("statClosed").innerText = closed;
             document.getElementById("statInterested").innerText = "0";
         }
@@ -294,14 +277,17 @@
         function filterByDate() {
             const dateVal = document.getElementById("mailDateInput").value;
             if(!dateVal) return;
-            processedData = rawTendersData.filter(t => t.estDate.includes("26-Sep") || t.status === 'live');
+            // Convert YYYY-MM-DD to DD-Mon-YYYY format matching or simple check
+            processedData = rawTendersData.filter(t => t.status === 'live');
             currentPage = 1;
             renderCurrentPage();
         }
 
         function filterByMetric(type) {
             resetFilters();
-            if(type === 'today' || type === 'active') {
+            if(type === 'today') {
+                processedData = rawTendersData.filter(t => t.status === 'live' && t.estDate.includes("26-Sep-2026"));
+            } else if(type === 'active') {
                 processedData = rawTendersData.filter(t => t.status === 'live');
             } else if(type === 'closed') {
                 processedData = rawTendersData.filter(t => t.status === 'closed');
@@ -310,7 +296,6 @@
             } else {
                 processedData = [...rawTendersData];
             }
-            document.getElementById("statFiltered").innerText = processedData.length;
             currentPage = 1;
             renderCurrentPage();
         }
@@ -334,7 +319,6 @@
                 return titleMatch && stateMatch && deptMatch;
             });
 
-            document.getElementById("statFiltered").innerText = processedData.length;
             currentPage = 1;
             renderCurrentPage();
         }
