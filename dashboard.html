@@ -73,7 +73,7 @@
             </div>
         </div>
 
-        <!-- FULLY COMPREHENSIVE FILTER PANEL WITH ALL STATES -->
+        <!-- FULLY COMPREHENSIVE FILTER PANEL WITH ALL STATES & DEPARTMENTS -->
         <div id="advancedFilterSection" class="glass-card p-5 rounded-2xl space-y-4 border border-purple-500/30">
             <div class="flex justify-between items-center border-b border-white/10 pb-3">
                 <div class="flex items-center gap-2">
@@ -91,7 +91,7 @@
                 <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Title, ID, Keyword..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
                 <input type="text" id="orgIdInput" oninput="applyFilters()" placeholder="Search Ref / Org Tender ID..." class="bg-slate-900 text-white px-3 py-2 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-cyan-400">
                 
-                <!-- Complete All India States Dropdown -->
+                <!-- Complete All India States & UTs Dropdown -->
                 <select id="stateFilter" onchange="applyFilters()" class="bg-slate-900 text-slate-300 text-xs p-2 rounded-xl border border-white/10 focus:outline-none">
                     <option value="">All States & UTs (All India)</option>
                     <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -130,7 +130,7 @@
                     <option value="Puducherry">Puducherry</option>
                 </select>
 
-                <!-- Complete Departments Dropdown -->
+                <!-- Complete Master Departments & Sectors Dropdown -->
                 <select id="deptFilter" onchange="applyFilters()" class="bg-slate-900 text-slate-300 text-xs p-2 rounded-xl border border-white/10 focus:outline-none">
                     <option value="">All Departments & Sectors</option>
                     <option value="PWD / Road Construction">PWD / Road Construction</option>
@@ -143,6 +143,17 @@
                     <option value="Water Resources / Irrigation">Water Resources / Irrigation</option>
                     <option value="Urban Development & Housing">Urban Development & Housing</option>
                     <option value="Education Department">Education Department</option>
+                    <option value="Rural Development">Rural Development</option>
+                    <option value="Finance & Taxation">Finance & Taxation</option>
+                    <option value="Home Affairs & Police">Home Affairs & Police</option>
+                    <option value="Agriculture & Farmers Welfare">Agriculture & Farmers Welfare</option>
+                    <option value="Aviation & Airports Authority">Aviation & Airports Authority</option>
+                    <option value="Telecommunications (DOT)">Telecommunications (DOT)</option>
+                    <option value="Ports, Shipping & Waterways">Ports, Shipping & Waterways</option>
+                    <option value="Coal & Mines Department">Coal & Mines Department</option>
+                    <option value="Oil & Natural Gas (ONGC/IOCL)">Oil & Natural Gas (ONGC/IOCL)</option>
+                    <option value="Environment & Forest">Environment & Forest</option>
+                    <option value="Housing and Urban Affairs">Housing and Urban Affairs</option>
                 </select>
             </div>
         </div>
@@ -524,7 +535,7 @@
             const quotePrice = totalCost + profitAmt;
 
             document.getElementById("simTotalCost").innerText = `₹ ${Math.round(totalCost).toLocaleString('en-IN')}`;
-            document.getElementById("simQuote", ).innerText = `₹ ${quotePrice.toLocaleString('en-IN')}`;
+            document.getElementById("simQuote").innerText = `₹ ${quotePrice.toLocaleString('en-IN')}`;
         }
 
         function closeRoiModal() { document.getElementById('roiModal').classList.add('hidden'); }
