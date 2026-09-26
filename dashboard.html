@@ -12,6 +12,11 @@
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
         .glass-card { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .btn-gradient { background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%); }
+        /* Custom styling for date input calendar picker icon */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8 flex flex-col justify-between">
@@ -36,10 +41,12 @@
 
         <!-- Interactive 6-Col Metrics Suite -->
         <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
-            <div class="glass-card p-3 rounded-2xl border-l-4 border-cyan-400 flex flex-col justify-between">
-                <p class="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-between">Mail Date <i class="fa-solid fa-calendar text-cyan-400"></i></p>
+            <!-- Fully Clickable Mail Date Card with Calendar Picker Popup -->
+            <div onclick="document.getElementById('mailDateInput').showPicker ? document.getElementById('mailDateInput').showPicker() : document.getElementById('mailDateInput').focus()" class="glass-card p-3 rounded-2xl border-l-4 border-cyan-400 flex flex-col justify-between cursor-pointer hover:bg-slate-800/80 transition">
+                <p class="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-between">Mail Date <i class="fa-solid fa-calendar-days text-cyan-400"></i></p>
                 <input type="date" id="mailDateInput" onchange="filterByDate()" value="2026-09-26" class="bg-slate-900 text-white text-[11px] font-bold p-1 rounded-lg border border-white/10 mt-1 focus:outline-none focus:border-cyan-400 cursor-pointer">
             </div>
+
             <div onclick="filterByMetric('today')" class="glass-card p-3 rounded-2xl border-l-4 border-purple-400 cursor-pointer hover:bg-slate-800/80 transition shadow-lg">
                 <p class="text-[10px] text-slate-400 uppercase font-bold">Today Tenders <i class="fa-solid fa-bolt text-purple-400 ml-1"></i></p>
                 <p id="statToday" class="text-base font-black text-purple-400 mt-1">0</p>
@@ -328,7 +335,7 @@
             const totalPages = Math.ceil(processedData.length / itemsPerPage) || 1;
 
             if (processedData.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-2xl"><p class="text-xs text-slate-400">No tenders found matching your selection.</p></div>`;
+                container.innerHTML = `<div class="col-span-full text-center py-12 glass-card rounded-2xl"><p class="text-xs text-slate-400">No tenders found matching your selection for this date.</p></div>`;
                 updatePaginationUI(1, 1);
                 return;
             }
@@ -339,7 +346,7 @@
             container.innerHTML = currentSlice.map(t => `
                 <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border border-white/10 hover:border-cyan-400/50 transition space-y-4">
                     <div>
-                        <div class="files flex items-center justify-between text-xs mb-3">
+                        <div class="flex items-center justify-between text-xs mb-3">
                             <span class="px-2.5 py-1 rounded-full font-bold ${t.status === 'closed' ? 'bg-rose-500/20 text-rose-300' : 'bg-cyan-500/20 text-cyan-300'}">
                                 ${t.id} (${t.status.toUpperCase()})
                             </span>
