@@ -9,32 +9,48 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; font-size: 14px; }
-        .glass-card { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .btn-gradient { background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%); }
+        /* Professional Enterprise Deep Slate & Midnight Gradient Theme */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #090d16 100%); 
+            color: #f1f5f9; 
+            font-size: 14px; 
+            min-height: 100vh;
+        }
+        .glass-card { 
+            background: rgba(15, 23, 42, 0.75); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .btn-gradient { 
+            background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%); 
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
         input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
         }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.5); }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 flex flex-col justify-between">
+<body class="p-4 md:p-6 flex flex-col justify-between">
 
     <div class="max-w-7xl mx-auto w-full space-y-6">
         <!-- Clean Navigation Header -->
-        <header class="flex justify-between items-center glass-card p-5 rounded-2xl shadow-xl">
+        <header class="flex justify-between items-center glass-card p-5 rounded-2xl">
             <div class="flex items-center space-x-3">
-                <a href="index.html" class="bg-gradient-to-r from-pink-500 to-purple-600 p-3 rounded-xl text-white text-base"><i class="fa-solid fa-rocket"></i></a>
+                <a href="index.html" class="bg-gradient-to-r from-pink-500 to-purple-600 p-3 rounded-xl text-white text-base shadow-lg"><i class="fa-solid fa-rocket"></i></a>
                 <div>
                     <h1 class="font-bold text-base md:text-lg text-white">Tender Galaxy <span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-md border border-purple-500/30">Enterprise Portal</span></h1>
                     <p class="text-sm text-slate-400">Welcome back, <span id="userName" class="text-pink-400 font-semibold">Member</span></p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <a href="tenders.html" class="hidden sm:inline-block px-4 py-2.5 bg-slate-800 text-cyan-400 rounded-xl text-sm font-bold border border-cyan-400/30">Public Portal View</a>
+                <a href="tenders.html" class="hidden sm:inline-block px-4 py-2.5 bg-slate-800/80 text-cyan-400 rounded-xl text-sm font-bold border border-cyan-400/30 hover:bg-slate-800 transition">Public Portal View</a>
                 <button onclick="logout()" class="px-4 py-2.5 bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-bold rounded-xl hover:bg-red-500 hover:text-white transition">
                     <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
                 </button>
@@ -49,7 +65,7 @@
                 <!-- User Profile & Quick Status Card -->
                 <div class="glass-card p-5 rounded-2xl space-y-3 border border-pink-500/20">
                     <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center font-bold text-white text-base" id="userAvatar">SK</div>
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center font-bold text-white text-base shadow-md" id="userAvatar">SK</div>
                         <div>
                             <h2 class="text-sm font-bold text-white" id="sidebarUserName">Sanjay Kumar</h2>
                             <p class="text-xs text-emerald-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Pro Member Active</p>
@@ -67,15 +83,15 @@
                         <i class="fa-solid fa-bolt text-amber-400"></i> Quick Filters
                     </h3>
                     <div class="space-y-2 text-sm">
-                        <button onclick="applyQuickFilter('highValue')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 transition flex items-center justify-between">
+                        <button onclick="applyQuickFilter('highValue')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 transition flex items-center justify-between border border-white/5">
                             <span><i class="fa-solid fa-indian-rupee-sign text-emerald-400 mr-2 text-xs"></i> High Value (> 1 Cr)</span>
                             <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
                         </button>
-                        <button onclick="applyQuickFilter('roadPwd')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 transition flex items-center justify-between">
+                        <button onclick="applyQuickFilter('roadPwd')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 transition flex items-center justify-between border border-white/5">
                             <span><i class="fa-solid fa-road text-cyan-400 mr-2 text-xs"></i> Road & PWD Dept</span>
                             <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
                         </button>
-                        <button onclick="applyQuickFilter('solarEnergy')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 transition flex items-center justify-between">
+                        <button onclick="applyQuickFilter('solarEnergy')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 transition flex items-center justify-between border border-white/5">
                             <span><i class="fa-solid fa-solar-panel text-amber-400 mr-2 text-xs"></i> Solar & Energy</span>
                             <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
                         </button>
